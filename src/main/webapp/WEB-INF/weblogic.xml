@@ -10,8 +10,11 @@
     <wls:container-descriptor>
         <wls:prefer-application-packages>
             <wls:package-name>org.slf4j</wls:package-name>
+            <wls:package-name>org.springframework.*</wls:package-name>
         </wls:prefer-application-packages>
     </wls:container-descriptor>
-
+    <wls:container-descriptor>
+        <wls:prefer-web-inf-classes>true</wls:prefer-web-inf-classes>
+    </wls:container-descriptor>
     <wls:context-root>/hwservice-1.0</wls:context-root>
 </wls:weblogic-web-app>

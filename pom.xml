@@ -45,7 +45,9 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+
 		</dependency>
+
 
 		<!--
 		<dependency>
@@ -83,7 +85,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
+			<version>4.5.5</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -91,6 +93,18 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 		<resources>
@@ -101,10 +115,12 @@
 					<include>*.jar</include>
 				</includes>
 			</resource>
+			<!--
 			<resource>
 				<directory>src/main/resources</directory>
 				<targetPath>${project.build.directory}</targetPath>
 			</resource>
+			-->
 		</resources>
 	</build>
 	<profiles>

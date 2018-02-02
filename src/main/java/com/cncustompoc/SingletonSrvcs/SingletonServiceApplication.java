@@ -14,15 +14,18 @@ import org.springframework.web.WebApplicationInitializer;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan
+//@Configuration
 @EnableScheduling
-@PropertySource(value = { "WEB-INF/application.properties" })
+@PropertySource(value = {"WEB-INF/application.properties"})
 public class SingletonServiceApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
-/*
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SingletonServiceApplication.class);
-	}
-	public static void main(String[] args) {
-		SpringApplication.run(SingletonServiceApplication.class, args);
-	}
-*/
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(SingletonServiceApplication.class);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SingletonServiceApplication.class, args);
+    }
+
 }

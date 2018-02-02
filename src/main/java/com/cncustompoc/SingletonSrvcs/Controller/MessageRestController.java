@@ -42,12 +42,11 @@ import java.util.UUID;
 @RestController
 public class MessageRestController {
 
-
     @Value("${hw.hcm.password}")
     private String hcmpwd;
     @Value("${hw.hcm.username}")
     private String hcmuser;
-
+    private static String initTime=CommonParams.initTime;
     public RestTemplate restTemplate()
             throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         SSLContext ctx = SSLContext.getInstance("TLS");
@@ -111,9 +110,8 @@ public class MessageRestController {
 
     @Scheduled(cron = "${hw.schedule.trigger}")
     private void getAtomFeedUpdates(){
-        String lasttime= CommonParams.initTime;
-        String url="https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min="+lasttime;
-        lasttime=ZonedDateTime.now().format( DateTimeFormatter.ISO_INSTANT );
+        String url="https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min="+initTime;
+        initTime=ZonedDateTime.now().format( DateTimeFormatter.ISO_INSTANT );
         String plainCreds = hcmuser+":"+hcmpwd;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
