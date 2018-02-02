@@ -46,15 +46,18 @@ public class MessageRestController {
     private String hcmpwd;
     @Value("${hw.hcm.username}")
     private String hcmuser;
-    private static String initTime=CommonParams.initTime;
+    private static String initTime = CommonParams.initTime;
+
     public RestTemplate restTemplate()
             throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         SSLContext ctx = SSLContext.getInstance("TLS");
         X509TrustManager tm = new X509TrustManager() {
             public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
             }
+
             public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
             }
+
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -73,35 +76,36 @@ public class MessageRestController {
         return restTemplate;
     }
 
-    @RequestMapping(value = "/AtomFeeds", method = RequestMethod.GET,headers="Accept=application/json",produces="application/json;charset=UTF-8")
-    public List<String> getCurrentFeedList(){
-        List<String> result=null;
-        String lasttime=ZonedDateTime.now().format( DateTimeFormatter.ISO_INSTANT );
-        String url="https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min="+lasttime;
-        String plainCreds = hcmuser+":"+hcmpwd;
+    @RequestMapping(value = "/AtomFeeds", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public List<String> getCurrentFeedList() {
+        List<String> result = null;
+        String lasttime = ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT);
+        String url = "https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min=" + lasttime;
+        String plainCreds = hcmuser + ":" + hcmpwd;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
         String base64Creds = new String(base64CredsBytes);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + base64Creds);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        RestTemplate resttemplate= null;
+        RestTemplate resttemplate = null;
         try {
             resttemplate = this.restTemplate();
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();}
-        if(resttemplate==null) return null;
+            e.printStackTrace();
+        }
+        if (resttemplate == null) return null;
         HttpEntity<String> response = resttemplate.exchange(url, HttpMethod.GET, request, String.class);
         String reply = response.getBody();
-        Message msg=new Message();
+        Message msg = new Message();
         msg.setMessageid(UUID.randomUUID().toString());
-        StringBuffer sb=new StringBuffer();
-        AtomFeedBean afb= JSON.parseObject(reply,AtomFeedBean.class);
-        if(afb!=null&&afb.getFeed().getEntries()!=null&&afb.getFeed().getEntries().size()>0){
-            result=new ArrayList();
-            for(Entries entrie:afb.getFeed().getEntries()){
+        StringBuffer sb = new StringBuffer();
+        AtomFeedBean afb = JSON.parseObject(reply, AtomFeedBean.class);
+        if (afb != null && afb.getFeed().getEntries() != null && afb.getFeed().getEntries().size() > 0) {
+            result = new ArrayList();
+            for (Entries entrie : afb.getFeed().getEntries()) {
                 result.add(entrie.getContent());
             }
         }
@@ -109,31 +113,31 @@ public class MessageRestController {
     }
 
     @Scheduled(cron = "${hw.schedule.trigger}")
-    private void getAtomFeedUpdates(){
-        String url="https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min="+initTime;
-        initTime=ZonedDateTime.now().format( DateTimeFormatter.ISO_INSTANT );
-        String plainCreds = hcmuser+":"+hcmpwd;
+    private void getAtomFeedUpdates() {
+        String url = "https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min=" + initTime;
+        initTime = ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT);
+        String plainCreds = hcmuser + ":" + hcmpwd;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
         String base64Creds = new String(base64CredsBytes);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + base64Creds);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        RestTemplate restTemplate= null;
+        RestTemplate restTemplate = null;
         try {
             restTemplate = this.restTemplate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(restTemplate==null) return ;
+        if (restTemplate == null) return;
         HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
         String reply = response.getBody();
-        Message msg=new Message();
+        Message msg = new Message();
         msg.setMessageid(UUID.randomUUID().toString());
-        StringBuffer sb=new StringBuffer();
-        AtomFeedBean afb= JSON.parseObject(reply,AtomFeedBean.class);
-        if(afb!=null&&afb.getFeed().getEntries()!=null&&afb.getFeed().getEntries().size()>0){
-            for(Entries entrie:afb.getFeed().getEntries()){
+        StringBuffer sb = new StringBuffer();
+        AtomFeedBean afb = JSON.parseObject(reply, AtomFeedBean.class);
+        if (afb != null && afb.getFeed().getEntries() != null && afb.getFeed().getEntries().size() > 0) {
+            for (Entries entrie : afb.getFeed().getEntries()) {
                 sb.append(entrie.getContent());
                 sb.append("\n");
                 CommonParams.contentList.add(entrie.getContent());
@@ -147,60 +151,62 @@ public class MessageRestController {
         msg.setText(sb.toString());
         CommonParams.messageList.add(msg);
     }
-    @RequestMapping(value = "/invokeICaption", method = RequestMethod.GET,headers="Accept=application/json",produces="application/json;charset=UTF-8")
-    public boolean invokeICaption(){
 
+    @RequestMapping(value = "/invokeICaption", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public boolean invokeICaption() {
         return true;
     }
-    @RequestMapping(value = "/singleAtomFeeds", method = RequestMethod.GET,headers="Accept=application/json",produces="application/json;charset=UTF-8")
-    public String getSingleFeed(){
-        String result=null;
-        if(!CommonParams.messagequeue.isEmpty()){
-            result=CommonParams.messagequeue.poll();
+
+    @RequestMapping(value = "/singleAtomFeeds", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public String getSingleFeed() {
+        String result = null;
+        if (!CommonParams.messagequeue.isEmpty()) {
+            result = CommonParams.messagequeue.poll();
         }
         return result;
     }
 
-    @RequestMapping(value = "/CurrentTimeStamp", method = RequestMethod.GET,headers="Accept=application/json",produces="application/json;charset=UTF-8")
-    public long getCurrentTimestamp(){
+    @RequestMapping(value = "/CurrentTimeStamp", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public long getCurrentTimestamp() {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         return ts.getTime();
     }
+
     //input format /2016-03-02 10:03:11
-    @RequestMapping(value = "/AtomFeeds/{dateString}", method = RequestMethod.GET,headers="Accept=application/json",produces="application/json;charset=UTF-8")
-    public List<String> getFeedListbyTime(@PathVariable String dateString){
-        List<String> result=null;
+    @RequestMapping(value = "/AtomFeeds/{dateString}", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public List<String> getFeedListbyTime(@PathVariable String dateString) {
+        List<String> result = null;
         //String lasttime=dateString;
         //String lasttime=ZonedDateTime.ofInstant(Instant.ofEpochSecond(querytimpstamp), ZoneId.of("Asia/Shanghai")).format(DateTimeFormatter.ISO_INSTANT);
         //String lasttime=ZonedDateTime.ofInstant(Timestamp.valueOf(querytimpstamp+".000").toInstant(), ZoneOffset.ofHours(8)).format(DateTimeFormatter.ISO_INSTANT);
         DateTimeFormatter beijingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").withZone(ZoneId.of("Asia/Shanghai"));
-        ZonedDateTime beijingDateTime = ZonedDateTime.parse(dateString+".000", beijingFormatter);
-        String lasttime=beijingDateTime.format(DateTimeFormatter.ISO_INSTANT);
+        ZonedDateTime beijingDateTime = ZonedDateTime.parse(dateString + ".000", beijingFormatter);
+        String lasttime = beijingDateTime.format(DateTimeFormatter.ISO_INSTANT);
 
-        String url="https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min="+lasttime;
-        String plainCreds = hcmuser+":"+hcmpwd;
+        String url = "https://ucf5-fap0377-fa-ext.oracledemos.com/hcmCoreApi/atomservlet/employee/empupdate?updated-min=" + lasttime;
+        String plainCreds = hcmuser + ":" + hcmpwd;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
         String base64Creds = new String(base64CredsBytes);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + base64Creds);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        RestTemplate resttemplate= null;
+        RestTemplate resttemplate = null;
         try {
             resttemplate = this.restTemplate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(resttemplate==null) return null;
+        if (resttemplate == null) return null;
         HttpEntity<String> response = resttemplate.exchange(url, HttpMethod.GET, request, String.class);
         String reply = response.getBody();
-        Message msg=new Message();
+        Message msg = new Message();
         msg.setMessageid(UUID.randomUUID().toString());
-        StringBuffer sb=new StringBuffer();
-        AtomFeedBean afb= JSON.parseObject(reply,AtomFeedBean.class);
-        if(afb!=null&&afb.getFeed().getEntries()!=null&&afb.getFeed().getEntries().size()>0){
-            result=new ArrayList();
-            for(Entries entrie:afb.getFeed().getEntries()){
+        StringBuffer sb = new StringBuffer();
+        AtomFeedBean afb = JSON.parseObject(reply, AtomFeedBean.class);
+        if (afb != null && afb.getFeed().getEntries() != null && afb.getFeed().getEntries().size() > 0) {
+            result = new ArrayList();
+            for (Entries entrie : afb.getFeed().getEntries()) {
                 result.add(entrie.getContent());
             }
         }
