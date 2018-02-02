@@ -2,9 +2,9 @@ package com.cncustompoc.SingletonSrvcs.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.cncustompoc.SingletonSrvcs.Common.CommonParams;
-import com.cncustompoc.SingletonSrvcs.domains.Message;
 import com.cncustompoc.SingletonSrvcs.domains.AtomFeedBean;
 import com.cncustompoc.SingletonSrvcs.domains.Entries;
+import com.cncustompoc.SingletonSrvcs.domains.Message;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -138,11 +138,11 @@ public class MessageRestController {
         AtomFeedBean afb = JSON.parseObject(reply, AtomFeedBean.class);
         if (afb != null && afb.getFeed().getEntries() != null && afb.getFeed().getEntries().size() > 0) {
             for (Entries entrie : afb.getFeed().getEntries()) {
-                sb.append(entrie.getContent());
+                sb.append(formatInputStr(entrie.getContent()));
                 sb.append("\n");
-                CommonParams.contentList.add(entrie.getContent());
+                CommonParams.contentList.add(formatInputStr(entrie.getContent()));
                 try {
-                    CommonParams.messagequeue.put(entrie.getContent());
+                    CommonParams.messagequeue.put(formatInputStr(entrie.getContent()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -150,6 +150,10 @@ public class MessageRestController {
         }
         msg.setText(sb.toString());
         CommonParams.messageList.add(msg);
+    }
+    private String formatInputStr(String input){
+        input=input.replace("\n","");
+        return input.replace("\\\"","\"");
     }
 
     @RequestMapping(value = "/invokeICaption", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")

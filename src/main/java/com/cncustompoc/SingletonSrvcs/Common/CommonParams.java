@@ -13,4 +13,9 @@ public class CommonParams {
     public static List<String> contentList=new ArrayList<>();
     public static String initTime="2016-01-10T18:53:22.000Z";
     public static LinkedBlockingQueue<String> messagequeue=new LinkedBlockingQueue();
+    public final static String BASEPATH="com.cncustompoc.SingletonSrvcs";
+    public final static String BASEPACKAGEPATH="com.cncustompoc.SingletonSrvcs";
+    public final static String DAOPACKAGEPATH="com.cncustompoc.SingletonSrvcs.repository";
+    public final static String MODELPACKAGEPATH="com.cncustompoc.SingletonSrvcs.domains";
+    public final static String druidPrefix="mybatis";
 }
