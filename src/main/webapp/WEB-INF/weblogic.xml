@@ -6,15 +6,19 @@
         http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
         http://xmlns.oracle.com/weblogic/weblogic-web-app
         http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
-
     <wls:container-descriptor>
         <wls:prefer-application-packages>
             <wls:package-name>org.slf4j</wls:package-name>
             <wls:package-name>org.springframework.*</wls:package-name>
+            <wls:package-name>javax.websocket.*</wls:package-name>
+            <wls:package-name>javax.websocket.server.*</wls:package-name>
         </wls:prefer-application-packages>
     </wls:container-descriptor>
     <wls:container-descriptor>
         <wls:prefer-web-inf-classes>true</wls:prefer-web-inf-classes>
     </wls:container-descriptor>
     <wls:context-root>/hwservice-1.0</wls:context-root>
+    <wls:session-descriptor>
+        <wls:cookie-path>/hwservice-1.0</wls:cookie-path>
+    </wls:session-descriptor>
 </wls:weblogic-web-app>

@@ -138,11 +138,11 @@ public class MessageRestController {
         AtomFeedBean afb = JSON.parseObject(reply, AtomFeedBean.class);
         if (afb != null && afb.getFeed().getEntries() != null && afb.getFeed().getEntries().size() > 0) {
             for (Entries entrie : afb.getFeed().getEntries()) {
-                sb.append(formatInputStr(entrie.getContent()));
+                sb.append(entrie.getContent());
                 sb.append("\n");
-                CommonParams.contentList.add(formatInputStr(entrie.getContent()));
+                CommonParams.contentList.add(entrie.getContent());
                 try {
-                    CommonParams.messagequeue.put(formatInputStr(entrie.getContent()));
+                    CommonParams.messagequeue.put(entrie.getContent());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -151,13 +151,11 @@ public class MessageRestController {
         msg.setText(sb.toString());
         CommonParams.messageList.add(msg);
     }
-    private String formatInputStr(String input){
-        input=input.replace("\n","");
-        return input.replace("\\\"","\"");
-    }
 
-    @RequestMapping(value = "/invokeICaption", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
-    public boolean invokeICaption() {
+
+    @RequestMapping(value = "/reload", method = RequestMethod.GET, headers = "Accept=application/json", produces = "application/json;charset=UTF-8")
+    public boolean reloadAtomFeed() {
+        initTime = CommonParams.initTime;
         return true;
     }
 

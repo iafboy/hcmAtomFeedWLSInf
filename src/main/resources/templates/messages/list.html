@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>用户信息修改历史列表</title>
+</head>
+<body>
+	<h1 layout:fragment="header">用户信息修改历史列表</h1>
+	<div layout:fragment="content" class="container">
+		<!--
+		<div class="pull-right">
+			<a href="form.html" th:href="@{/(form)}">Create Message</a>
+		</div>
+
+		<div class="pull-right">
+			<a href="trigger.html" th:href="@{/(trigger)}">Sent Message</a>
+		</div>
+		-->
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<td>调用时间</td>
+					<td>报表内容</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${messages.empty}">
+					<td colspan="3">No messages</td>
+				</tr>
+				<tr th:each="message : ${messages}">
+					<td th:text="${#calendars.format(message.created)}">July 11,
+						2012 2:17:16 PM CDT</td>
+					<!--
+					<td th:text="${message.text}"></td>
+					-->
+					<td><a href="view.html" th:href="@{'/' + ${message.messageid}}"
+						   th:text="详细信息"> 详细信息 </a></td>
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
