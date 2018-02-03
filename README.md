@@ -1,4 +1,5 @@
 # springboot-war-jcs-template project
+本工程可以作为部署至jcs的springboot web 程序的template
 ## 调用 HCM CS的ATOM FEED REST Trigger应用
 直接调用HCM的atom feed取得雇员信息更新列表
 ## core is spring boot
